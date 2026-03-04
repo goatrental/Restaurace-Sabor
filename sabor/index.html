@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SABOR & 480° | Dvě restaurace pod jednou střechou | Karlovy Vary</title>
+<meta name="description" content="SABOR Mediterraneo – autentické španělské tapas & steaky. 480° Pizzeria Napoletana – pravá neapolská pizza. Dvě špičkové restaurace v centru Karlových Varů.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root {
+  /* SABOR - Spanish warmth */
+  --sabor-primary: #8B2635;
+  --sabor-accent: #D4A853;
+  --sabor-dark: #1a0a0d;
+  --sabor-mid: #2d1216;
+  /* 480° - Italian olive/terracotta */
+  --pizza-primary: #5B7744;
+  --pizza-accent: #E8A849;
+  --pizza-dark: #0d1209;
+  --pizza-mid: #1a2213;
+  /* Shared */
+  --cream: #F2EAD8;
+  --text: #F2EAD8;
+  --text-dim: rgba(242,234,216,1);
+  --text-dimmer: rgba(242,234,216,0.85);
+  --bg: #0f0c08;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════ LOADER ═══════════ */
+.loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+}
+.loader-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 300; letter-spacing: 6px;
+  text-transform: uppercase; color: var(--cream);
+  opacity: 0;
+}
+.loader-ampersand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-style: italic; color: var(--sabor-accent);
+  opacity: 0;
+}
+.loader-bar {
+  width: 120px; height: 1px; background: rgba(242,234,216,0.15);
+  position: relative; overflow: hidden;
+}
+.loader-bar::after {
+  content: ''; position: absolute; left: -100%; top: 0;
+  width: 100%; height: 100%; background: #ffffff;
+  animation: loaderSlide 1.2s ease-in-out forwards;
+}
+@keyframes loaderSlide { to { left: 0; } }
+@keyframes loaderFadeOut { 0%,80% { opacity:1; } 100% { opacity:0; pointer-events:none; visibility:hidden; } }
+.loader { animation: loaderFadeOut 2.5s ease-in-out forwards; }
+
+/* ═══════════ NAV ═══════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background 0.4s, padding 0.4s;
+}
+.nav.scrolled {
+  background: rgba(15,12,8,0.95);
+  backdrop-filter: blur(20px);
+  padding: 14px 40px;
+  border-bottom: 1px solid rgba(242,234,216,0.06);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.nav-logo-sabor {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--sabor-primary);
+}
+.nav-logo-amp {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-style: italic;
+  color: var(--sabor-accent);
+}
+.nav-logo-pizza {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--pizza-primary);
+}
+.nav-links {
+  display: flex; gap: 30px; list-style: none;
+}
+.nav-links a {
+  color: #ffffff; text-decoration: none;
+  font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+  font-weight: 400; transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cream); }
+
+.nav-logo-img {
+  height: 110px; width: auto;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.3s;
+}
+.nav-reserve {
+  padding: 10px 24px; border: 1px solid #ffffff;
+  color: #ffffff; text-decoration: none;
+  font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+  font-weight: 500; transition: all 0.3s;
+}
+.nav-reserve:hover {
+  background: #ffffff; color: var(--bg);
+}
+
+/* Mobile menu */
+.menu-toggle {
+  display: none; background: none; border: none;
+  width: 32px; height: 24px; position: relative; cursor: pointer;
+}
+.menu-toggle span {
+  display: block; width: 100%; height: 1px;
+  background: var(--cream); position: absolute; left: 0;
+  transition: all 0.3s;
+}
+.menu-toggle span:nth-child(1) { top: 0; }
+.menu-toggle span:nth-child(2) { top: 50%; }
+.menu-toggle span:nth-child(3) { top: 100%; }
+.menu-toggle.active span:nth-child(1) { top: 50%; transform: rotate(45deg); }
+.menu-toggle.active span:nth-child(2) { opacity: 0; }
+.menu-toggle.active span:nth-child(3) { top: 50%; transform: rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; inset: 0; z-index: 99;
+  background: rgba(15,12,8,0.98);
+  flex-direction: column; align-items: center;
+  justify-content: center; gap: 30px;
+}
+.mobile-menu.active { display: flex; }
+.mobile-menu a {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; color: var(--cream);
+  text-decoration: none; font-weight: 300;
+  letter-spacing: 2px;
+}
+
+/* ═══════════ HERO SPLIT ═══════════ */
+.hero {
+  height: 100vh; display: flex; position: relative;
+  overflow: hidden;
+}
+.hero-side {
+  flex: 1; position: relative; display: flex;
+  align-items: center; justify-content: center;
+  cursor: pointer; overflow: hidden;
+  transition: flex 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-side:hover { flex: 1.3; }
+.hero-side img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: transform 0.8s ease, filter 0.8s ease;
+}
+.hero-side:hover img { transform: scale(1.05); }
+.hero-overlay {
+  position: absolute; inset: 0;
+  transition: background 0.6s;
+}
+.hero-sabor .hero-overlay {
+  background: linear-gradient(135deg, rgba(139,38,53,0.35), rgba(15,12,8,0.6));
+}
+.hero-sabor:hover .hero-overlay {
+  background: linear-gradient(135deg, rgba(139,38,53,0.25), rgba(15,12,8,0.5));
+}
+.hero-pizza .hero-overlay {
+  background: linear-gradient(135deg, rgba(91,119,68,0.35), rgba(15,12,8,0.8));
+}
+.hero-pizza:hover .hero-overlay {
+  background: linear-gradient(135deg, rgba(91,119,68,0.25), rgba(15,12,8,0.65));
+}
+.hero-content {
+  position: absolute; inset: 0; z-index: 2; text-align: center;
+  padding: 40px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 30px;
+  overflow: visible;
+}
+.hero-badge {
+  font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 20px;
+}
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 300; line-height: 1.1;
+  margin-bottom: 15px;
+}
+.hero-sabor .hero-name em { color: var(--sabor-accent); font-style: italic; }
+.hero-sabor-logo {
+  position: relative !important;
+  inset: auto !important;
+  width: clamp(260px, 36vw, 420px) !important;
+  height: auto !important;
+  max-height: 45vh !important;
+  max-width: 85% !important;
+  object-fit: contain !important;
+  transform: none !important;
+  filter: brightness(0) invert(1);
+}
+.hero-pizza-logo {
+  position: relative !important;
+  inset: auto !important;
+  width: clamp(260px, 36vw, 420px) !important;
+  height: auto !important;
+  max-height: 45vh !important;
+  max-width: 85% !important;
+  object-fit: contain !important;
+  transform: translateY(50px) !important;
+  filter: brightness(0) invert(1);
+}
+.hero-pizza .hero-name em { color: var(--pizza-accent); font-style: italic; }
+.hero-tagline {
+  font-size: 0.8rem; letter-spacing: 2px;
+  color: var(--text-dim); max-width: 300px; margin: 0 auto 30px;
+  line-height: 1.6;
+}
+.hero-btn {
+  display: inline-block; padding: 14px 36px;
+  font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase;
+  font-weight: 500; text-decoration: none;
+  transition: all 0.4s;
+}
+.hero-sabor .hero-btn {
+  border: 1px solid #ffffff; color: #ffffff;
+}
+.hero-sabor .hero-btn:hover {
+  background: #ffffff; color: var(--bg);
+}
+.hero-pizza .hero-btn {
+  border: 1px solid #ffffff; color: #ffffff;
+}
+.hero-pizza .hero-btn:hover {
+  background: #ffffff; color: var(--bg);
+}
+
+/* Center divider */
+.hero-divider {
+  position: absolute; top: 0; bottom: 0;
+  left: 50%; width: 1px; z-index: 10;
+  background: rgba(242,234,216,0.15);
+  transform: translateX(-50%);
+}
+.hero-divider-circle {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px; height: 70px; border-radius: 50%;
+  background: var(--bg); border: 1px solid rgba(242,234,216,0.2);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 11;
+}
+.hero-divider-circle span {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-style: italic;
+  color: var(--sabor-accent);
+}
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%); z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.hero-scroll span {
+  font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+  color: #ffffff;
+}
+.hero-scroll-line {
+  width: 1px; height: 40px; background: rgba(242,234,216,0.15);
+  position: relative; overflow: hidden;
+}
+.hero-scroll-line::after {
+  content: ''; position: absolute; top: -100%; left: 0;
+  width: 100%; height: 100%; background: var(--sabor-accent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0% { top: -100%; } 50% { top: 100%; } 100% { top: 100%; }
+}
+
+/* ═══════════ INTRO ═══════════ */
+.intro {
+  padding: 120px 40px;
+  text-align: center;
+  max-width: 900px; margin: 0 auto;
+}
+.intro-label {
+  font-size: 0.65rem; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--sabor-accent);
+  margin-bottom: 30px;
+}
+.intro h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300; line-height: 1.3;
+  margin-bottom: 30px;
+}
+.intro h2 em { color: var(--sabor-accent); font-style: italic; }
+.intro p {
+  font-size: 0.95rem; line-height: 1.8;
+  color: var(--text-dim); max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ═══════════ RESTAURANT SECTION ═══════════ */
+.restaurant-section {
+  padding: 100px 40px;
+  position: relative;
+}
+.restaurant-section::before {
+  content: ''; position: absolute; inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23F2EAD8' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.section-sabor { background: linear-gradient(180deg, var(--sabor-dark), var(--bg)); }
+.section-pizza { background: linear-gradient(180deg, var(--pizza-dark), var(--bg)); }
+
+.rest-header {
+  text-align: center; margin-bottom: 80px;
+  position: relative;
+}
+.rest-header-label {
+  font-size: 0.6rem; letter-spacing: 5px;
+  text-transform: uppercase; margin-bottom: 15px;
+}
+.section-sabor .rest-header-label { color: var(--sabor-accent); }
+.section-pizza .rest-header-label { color: var(--pizza-accent); }
+
+.rest-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300; margin-bottom: 20px;
+}
+.section-sabor .rest-header h2 em { color: var(--sabor-primary); font-style: italic; }
+.section-pizza .rest-header h2 em { color: var(--pizza-primary); font-style: italic; }
+
+.rest-header p {
+  font-size: 0.88rem; line-height: 1.8;
+  color: var(--text-dim); max-width: 650px;
+  margin: 0 auto;
+}
+.rest-divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 15px; margin-top: 30px;
+}
+.rest-divider-line { width: 50px; height: 1px; }
+.section-sabor .rest-divider-line { background: rgba(139,38,53,0.4); }
+.section-pizza .rest-divider-line { background: rgba(91,119,68,0.4); }
+.rest-divider-dot { font-size: 6px; }
+.section-sabor .rest-divider-dot { color: var(--sabor-accent); }
+.section-pizza .rest-divider-dot { color: var(--pizza-accent); }
+
+/* Gallery Grid */
+.gallery-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 4px; max-width: 1100px; margin: 0 auto 80px;
+  border-radius: 4px;
+}
+.gallery-grid .gallery-cell {
+  overflow: hidden; height: 280px;
+}
+.gallery-grid .gallery-cell img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s ease, filter 0.3s;
+  filter: brightness(0.85);
+}
+.gallery-grid .gallery-cell:hover img {
+  transform: scale(1.07); filter: brightness(1);
+}
+
+/* Menu Section */
+.menu-section {
+  max-width: 900px; margin: 0 auto;
+  position: relative;
+}
+.menu-section h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 300;
+  text-align: center; margin-bottom: 50px;
+}
+.menu-category {
+  margin-bottom: 50px;
+}
+.menu-category-title {
+  font-size: 0.65rem; letter-spacing: 4px;
+  text-transform: uppercase; margin-bottom: 25px;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(242,234,216,0.08);
+}
+.section-sabor .menu-category-title { color: var(--sabor-accent); }
+.section-pizza .menu-category-title { color: var(--pizza-accent); }
+
+.menu-item {
+  display: flex; justify-content: space-between;
+  align-items: baseline; padding: 12px 0;
+  border-bottom: 1px solid rgba(242,234,216,0.04);
+}
+.menu-item-left { flex: 1; padding-right: 20px; }
+.menu-item-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 500;
+  margin-bottom: 4px;
+}
+.menu-item-desc {
+  font-size: 0.78rem; color: #ffffff;
+  line-height: 1.5;
+}
+.menu-item-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 500;
+  white-space: nowrap;
+}
+.section-sabor .menu-item-price { color: var(--sabor-accent); }
+.section-pizza .menu-item-price { color: var(--pizza-accent); }
+
+.menu-item-allergens {
+  font-size: 0.65rem; color: #ffffff;
+}
+
+/* ═══════════ CHEF ═══════════ */
+.chef-section {
+  padding: 100px 40px;
+  background: linear-gradient(180deg, var(--bg), rgba(13,18,9,0.5), var(--bg));
+}
+.chef-content {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+.chef-img {
+  position: relative;
+}
+.chef-img img {
+  width: 100%; height: auto; display: block;
+  filter: brightness(0.9);
+}
+.chef-img::after {
+  content: ''; position: absolute; inset: 0;
+  border: 1px solid rgba(232,168,73,0.2);
+  margin: 15px;
+}
+.chef-text-label {
+  font-size: 0.6rem; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--pizza-accent);
+  margin-bottom: 20px;
+}
+.chef-text h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem; font-weight: 300;
+  margin-bottom: 25px; line-height: 1.2;
+}
+.chef-text h3 em { color: var(--pizza-accent); font-style: italic; }
+.chef-text p {
+  font-size: 0.88rem; line-height: 1.8;
+  color: var(--text-dim); margin-bottom: 15px;
+}
+.chef-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 20px; padding: 12px 20px;
+  border: 1px solid rgba(232,168,73,0.2);
+}
+.chef-badge span {
+  font-size: 0.7rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--pizza-accent);
+}
+
+/* ═══════════ HOURS ═══════════ */
+.hours-section {
+  padding: 100px 40px;
+  text-align: center;
+}
+.hours-section h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem; font-weight: 300;
+  margin-bottom: 50px;
+}
+.hours-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; max-width: 800px; margin: 0 auto;
+}
+.hours-card {
+  padding: 40px 30px;
+  border: 1px solid rgba(242,234,216,0.06);
+  text-align: center;
+}
+.hours-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; margin-bottom: 5px;
+}
+.hours-card-sub {
+  font-size: 0.65rem; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 25px;
+}
+.hours-sabor .hours-card-sub { color: var(--sabor-accent); }
+.hours-pizza .hours-card-sub { color: var(--pizza-accent); }
+
+.hours-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0; font-size: 0.85rem;
+  border-bottom: 1px solid rgba(242,234,216,0.04);
+}
+.hours-row .day { color: #ffffff; }
+.hours-row .time { font-weight: 400; color: #ffffff; }
+.hours-closed { color: #ffffff; font-style: italic; }
+
+/* ═══════════ RESERVATION ═══════════ */
+.reservation {
+  padding: 100px 40px;
+  background: linear-gradient(180deg, var(--bg), rgba(26,10,13,0.3), var(--bg));
+  text-align: center;
+}
+.reservation h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300; margin-bottom: 15px;
+}
+.reservation h2 em { color: var(--sabor-accent); font-style: italic; }
+.reservation > p {
+  font-size: 0.88rem; color: var(--text-dim);
+  margin-bottom: 50px;
+}
+.reservation-form {
+  max-width: 600px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.form-group { text-align: left; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label {
+  display: block; font-size: 0.65rem;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+.form-group input,
+.form-group select {
+  width: 100%; padding: 14px 16px;
+  background: rgba(242,234,216,0.04);
+  border: 1px solid rgba(242,234,216,0.1);
+  color: var(--cream); font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem; font-weight: 300;
+  transition: border-color 0.3s;
+  appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none; border-color: var(--sabor-accent);
+}
+.form-group select { cursor: pointer; }
+.form-group select option { background: var(--bg); }
+.form-group input[type="date"]::-webkit-calendar-picker-indicator,
+.form-group input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.7; cursor: pointer; }
+
+.form-submit {
+  grid-column: 1 / -1;
+  padding: 16px 50px;
+  background: var(--sabor-accent);
+  border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--bg); transition: all 0.3s;
+  margin-top: 10px;
+}
+.form-submit:hover { background: #e0b865; transform: translateY(-2px); }
+
+.reservation-phones {
+  margin-top: 50px;
+  display: flex; justify-content: center; gap: 50px;
+}
+.reservation-phone {
+  text-align: center;
+}
+.reservation-phone-label {
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-dimmer);
+  margin-bottom: 8px;
+}
+.reservation-phone a {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; color: var(--cream);
+  text-decoration: none; transition: color 0.3s;
+}
+.reservation-phone a:hover { color: var(--sabor-accent); }
+
+/* ═══════════ MAP + CONTACT ═══════════ */
+.contact {
+  padding: 80px 40px;
+}
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; max-width: 1000px; margin: 0 auto;
+  align-items: start;
+}
+.contact-info h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 300;
+  margin-bottom: 30px;
+}
+.contact-item {
+  display: flex; gap: 15px; margin-bottom: 20px;
+  align-items: flex-start;
+}
+.contact-icon {
+  width: 20px; height: 20px; flex-shrink: 0;
+  margin-top: 2px;
+}
+.contact-icon svg { width: 100%; height: 100%; fill: var(--sabor-accent); }
+.contact-item-text {
+  font-size: 0.88rem; line-height: 1.6; color: var(--text-dim);
+}
+.contact-item-text a {
+  color: #ffffff; text-decoration: none;
+  transition: color 0.3s;
+}
+a[href^="mailto:"] {
+  color: #ffffff; text-decoration: none;
+}
+.contact-item-text a:hover { color: var(--sabor-accent); }
+
+.contact-socials {
+  display: flex; gap: 12px; margin-top: 30px;
+}
+.contact-social {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(242,234,216,0.07);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; text-decoration: none;
+}
+.contact-social:hover {
+  background: var(--sabor-accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(212,168,83,0.3);
+}
+.contact-social svg {
+  width: 18px; height: 18px; fill: #ffffff;
+  transition: fill 0.3s;
+}
+.contact-social:hover svg { fill: var(--bg); }
+
+.contact-map {
+  position: relative; overflow: hidden;
+}
+.contact-map iframe {
+  width: 100%; height: 400px; border: 0;
+  filter: grayscale(0.8) brightness(0.7) contrast(1.1);
+}
+
+/* ═══════════ FOOTER ═══════════ */
+footer {
+  padding: 40px;
+  border-top: 1px solid rgba(242,234,216,0.06);
+  text-align: center;
+}
+footer p {
+  font-size: 0.72rem; color: var(--text-dimmer);
+  letter-spacing: 1px;
+}
+
+/* ═══════════ GASTROMAPA BADGE ═══════════ */
+.gastro-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; margin-top: 15px;
+  border: 1px solid rgba(232,168,73,0.25);
+  background: rgba(232,168,73,0.05);
+  text-decoration: none; transition: all 0.3s;
+}
+.gastro-badge:hover {
+  background: rgba(232,168,73,0.1);
+  border-color: rgba(232,168,73,0.4);
+}
+.gastro-badge span {
+  font-size: 0.7rem; letter-spacing: 1px;
+  color: var(--pizza-accent);
+}
+
+/* ═══════════ WOLT BADGE ═══════════ */
+.wolt-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px; margin-top: 20px;
+  background: transparent; border: 1px solid var(--pizza-accent);
+  border-radius: 4px;
+  text-decoration: none; transition: all 0.3s;
+}
+.wolt-badge:hover { background: var(--pizza-accent); transform: translateY(-2px); }
+.wolt-badge span {
+  font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 1px; color: var(--cream);
+  text-transform: uppercase;
+}
+
+/* ═══════════ PARTNERS ═══════════ */
+.partners {
+  padding: 50px 60px;
+  background: var(--bg);
+  border-top: 1px solid rgba(242,234,216,0.08);
+}
+.partners-inner {
+  display: flex; align-items: center; gap: 60px; flex-wrap: wrap;
+}
+.partners-label {
+  font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(242,234,216,0.5); white-space: nowrap;
+}
+.partners-logos {
+  display: flex; align-items: center; gap: 50px; flex-wrap: wrap;
+}
+.partners-logos img {
+  height: 32px; width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+.partners-logos img:hover { opacity: 1; }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 1024px) {
+  .hours-grid { gap: 30px; }
+  .chef-content { gap: 40px; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-logo-img { height: 70px; }
+  .nav-reserve { display: none; }
+  .menu-toggle { display: block; }
+  .nav { padding: 15px 20px; }
+
+  .hero { flex-direction: column; }
+  .hero-side { min-height: 50vh; }
+  .hero-side:hover { flex: 1; }
+  .hero-divider { display: none; }
+  .hero-divider-circle { top: 50%; bottom: auto; left: 50%; }
+  .hero-name { font-size: clamp(1.8rem, 8vw, 3rem); }
+  .hero-sabor-logo, .hero-pizza-logo {
+    width: clamp(160px, 55vw, 280px) !important;
+  }
+
+  .intro { padding: 80px 25px; }
+  .restaurant-section { padding: 80px 25px; }
+
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .gallery-grid .gallery-cell { height: 200px; }
+
+  .chef-content { grid-template-columns: 1fr; gap: 40px; }
+
+  .hours-grid { grid-template-columns: 1fr; gap: 30px; }
+
+  .reservation-form { grid-template-columns: 1fr; }
+  .reservation-phones { flex-direction: column; gap: 25px; }
+
+  .contact-grid { grid-template-columns: 1fr; }
+  .contact-map iframe { height: 300px; }
+
+  /* Bull cursor skryj na dotykovych zarizeni */
+  #bull-cursor { display: none; }
+  * { cursor: auto !important; }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-grid .gallery-cell { height: 220px; }
+  .hero-content { padding: 20px; }
+  .hero-tagline { font-size: 0.72rem; }
+  #loader-logo { width: 80vw !important; max-width: 300px; }
+  footer p { font-size: 0.6rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <!-- to samý tadyten obázek -->
+  <img src="images/logo 480 %2B sabor.png" alt="Sabor & 480°" id="loader-logo" style="width:360px;opacity:0;transform:scale(0.85);">
+  <div class="loader-bar"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+  <!-- to samý tadyten obázek -->
+    <img src="data:image/webp;base64,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" alt="Sabor & 480°" class="nav-logo-img">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sabor">Sabor</a></li>
+    <li><a href="#pizzeria">480°</a></li>
+    <li><a href="#hours">Otevírací doba</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+  <a href="#reservation" class="nav-reserve">Rezervace</a>
+  <button class="menu-toggle" id="menuToggle">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#sabor" onclick="closeMenu()">Sabor</a>
+  <a href="#pizzeria" onclick="closeMenu()">480° Pizzeria</a>
+  <a href="#hours" onclick="closeMenu()">Otevírací doba</a>
+  <a href="#contact" onclick="closeMenu()">Kontakt</a>
+  <a href="#reservation" onclick="closeMenu()">Rezervace</a>
+</div>
+
+<!-- HERO SPLIT -->
+<section class="hero">
+  <div class="hero-side hero-sabor" onclick="document.getElementById('sabor').scrollIntoView({behavior:'smooth'})">
+    <img src="images/sabor-picc restaurant.jpg" alt="SABOR Mediterraneo">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <img src="images/sabor logo.png" alt="SABOR" class="hero-sabor-logo">
+      <a href="#sabor" class="hero-btn" onclick="event.stopPropagation()">Objevit</a>
+    </div>
+  </div>
+
+  <div class="hero-divider"></div>
+  <div class="hero-divider-circle"><img src="images/myska.png" alt="Sabor" style="width:104px;height:104px;object-fit:contain;filter:brightness(0) invert(1);"></div>
+
+  <div class="hero-side hero-pizza" onclick="document.getElementById('pizzeria').scrollIntoView({behavior:'smooth'})">
+    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80" alt="480° Pizzeria Napoletana">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <img src="images/480 logo pizzeria.png" alt="480° Pizzeria Napoletana" class="hero-pizza-logo">
+      <a href="#pizzeria" class="hero-btn" onclick="event.stopPropagation()">Objevit</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="intro" id="intro">
+  <div class="intro-label">Dvě restaurace · Jedna adresa</div>
+  <h2>Unikátní komplex dvou<br><em>špičkových gastronomií</em></h2>
+  <p>Vydejte se na gastronomickou cestu po Středomoří, aniž byste opustili Karlovy Vary. Pod jednou střechou na vás čekají dvě zcela odlišné restaurace – španělské SABOR Mediterraneo v přízemí a italská 480° Pizzeria Napoletana v suterénu. Stačí si jen vybrat.</p>
+</section>
+
+<!-- ═══════════ SABOR SECTION ═══════════ -->
+<section class="restaurant-section section-sabor" id="sabor">
+  <div class="rest-header">
+    <div class="rest-header-label">Přízemí · Vstup z ulice Moskevská</div>
+    <h2>Sabor <em>Mediterraneo</em></h2>
+    <p>Malý kousek pravého Španělska přímo uprostřed Karlových Varů. Autentické tapas, prvotřídní steaky z grilu Josper a vybraná španělská vína dovážená z Mallorky. O zachování autenticity dbá šéfkuchař s 14letou praxí ve Španělsku.</p>
+    <div class="rest-divider">
+      <div class="rest-divider-line"></div>
+      <div class="rest-divider-dot">◆</div>
+      <div class="rest-divider-line"></div>
+    </div>
+  </div>
+
+  <!-- Sabor Gallery -->
+  <div class="gallery-grid">
+    <div class="gallery-cell"><img src="images/sabor picc 2.jpg" alt="Steaky" loading="lazy"></div>
+    <div class="gallery-cell"><img src="images/sabor piccc.jpg" alt="Tapas" loading="lazy"></div>
+    <div class="gallery-cell"><img src="images/another sabor pic.jpg" alt="Víno" loading="lazy"></div>
+  </div>
+
+  <!-- Sabor Menu -->
+  <div class="menu-section">
+    <h3>Jídelní lístek</h3>
+
+    <div class="menu-category">
+      <div class="menu-category-title">Tapas y Pinchos</div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Pan Cristal con Tomate</div>
+          <div class="menu-item-desc">Opečený katalánský chléb s rajčatovým pyré a olivovým olejem</div>
+        </div>
+        <div class="menu-item-price">49 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Patatas Bravas</div>
+          <div class="menu-item-desc">Opečené brambory s pikantní salsou Brava</div>
+        </div>
+        <div class="menu-item-price">149 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Pimientos de Padrón</div>
+          <div class="menu-item-desc">Restované papričky Padrón, olivový olej, hrubá sůl</div>
+        </div>
+        <div class="menu-item-price">149 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Mejillones a la Marinera</div>
+          <div class="menu-item-desc">Slávky v galicijské omáčce Marinera</div>
+        </div>
+        <div class="menu-item-price">249 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Pulpo a la Gallega</div>
+          <div class="menu-item-desc">Vařená chobotnice, brambor, paprika, olivový olej</div>
+        </div>
+        <div class="menu-item-price">249 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Gambas al Ajillo</div>
+          <div class="menu-item-desc">Krevety v olivovém oleji s česnekem a chilli</div>
+        </div>
+        <div class="menu-item-price">249 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Dátiles con Bacon</div>
+          <div class="menu-item-desc">Grilované datle obalené slaninou</div>
+        </div>
+        <div class="menu-item-price">169 Kč</div>
+      </div>
+    </div>
+
+    <div class="menu-category">
+      <div class="menu-category-title">Jamones y Embutidos</div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Jamón Ibérico de Bellota</div>
+          <div class="menu-item-desc">Nejlepší sušená šunka na světě. Černá prasata Pata Negra, zrání 48 měsíců</div>
+        </div>
+        <div class="menu-item-price">549 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Tabla Mixta Superior</div>
+          <div class="menu-item-desc">Paleta Ibérico, Sobrasada, Chorizo Ibérico, Manchego curado, olivy</div>
+        </div>
+        <div class="menu-item-price">549 Kč</div>
+      </div>
+    </div>
+
+    <div class="menu-category">
+      <div class="menu-category-title">Postres – Dezerty</div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Crema Catalana</div>
+          <div class="menu-item-desc">Krém ze žloutků a smetany, ochucený citrusy</div>
+        </div>
+        <div class="menu-item-price">169 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Bunyols Mallorquins</div>
+          <div class="menu-item-desc">Smažené vdolky z batátového těsta, skořice, Dulce de Leche</div>
+        </div>
+        <div class="menu-item-price">169 Kč</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 480° PIZZERIA SECTION ═══════════ -->
+<section class="restaurant-section section-pizza" id="pizzeria">
+  <div class="rest-header">
+    <div class="rest-header-label">Suterén · Vstup z ulice nám. Dr. M. Horákové</div>
+    <h2>480° Pizzeria <em>Napoletana</em></h2>
+    <p>Pravá neapolská pizza připravovaná v jediné asociací APN uznané elektrické peci Scugnizzo Napoletano (Izzo) dovezené přímo z Neapole. Těsto zraje několik dní, za minutu a půl je v peci rozpálené na 480° hotovo.</p>
+    <div class="rest-divider">
+      <div class="rest-divider-line"></div>
+      <div class="rest-divider-dot">◆</div>
+      <div class="rest-divider-line"></div>
+    </div>
+    <a href="https://gastromapa.hejlik.cz/480-pizzeria-napoletana" target="_blank" class="gastro-badge">
+      <span>★ Doporučeno v Gastromapě Lukáše Hejlíka</span>
+    </a>
+  </div>
+
+  <!-- Pizza Gallery -->
+  <div class="gallery-grid">
+    <div class="gallery-cell"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80" alt="Neapolská pizza" loading="lazy"></div>
+    <div class="gallery-cell"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt="Pizza z pece" loading="lazy"></div>
+    <div class="gallery-cell"><img src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&q=80" alt="Pizza suroviny" loading="lazy"></div>
+  </div>
+
+  <!-- Pizza Menu -->
+  <div class="menu-section">
+    <h3>Pizza Menu</h3>
+
+    <div class="menu-category">
+      <div class="menu-category-title">Pizze Classiche</div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Marinara</div>
+          <div class="menu-item-desc">Drcená rajčata San Marzano D.O.P., oregano, česnek, bazalka, olivový olej</div>
+        </div>
+        <div class="menu-item-price">169 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Margherita</div>
+          <div class="menu-item-desc">Drcená rajčata San Marzano D.O.P., mozzarella Fior di Latte, bazalka</div>
+        </div>
+        <div class="menu-item-price">199 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Diavola</div>
+          <div class="menu-item-desc">Rajčata San Marzano, mozzarella FdL, pikantní salám Napoli</div>
+        </div>
+        <div class="menu-item-price">279 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Quattro Formaggi</div>
+          <div class="menu-item-desc">Zauzená mozzarella Provola, gorgonzola, asiago, pecorino</div>
+        </div>
+        <div class="menu-item-price">279 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Capricciosa</div>
+          <div class="menu-item-desc">Rajčata, mozzarella, šunka, salám Felino, žampiony, olivy, artyčok</div>
+        </div>
+        <div class="menu-item-price">299 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Calzone Napoletano</div>
+          <div class="menu-item-desc">Rajčata, mozzarella, ricotta, dušená šunka, salám Felino</div>
+        </div>
+        <div class="menu-item-price">289 Kč</div>
+      </div>
+    </div>
+
+    <div class="menu-category">
+      <div class="menu-category-title">Pizze Gourmet</div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Bronte</div>
+          <div class="menu-item-desc">Provola, Mortadella, drcené pistácie, pistáciový krém, ricotta</div>
+        </div>
+        <div class="menu-item-price">299 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Calabrese</div>
+          <div class="menu-item-desc">Krém z červené cibule, mozzarella, pikantní Nduja, salsiccia, Grana Padano</div>
+        </div>
+        <div class="menu-item-price">329 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Prosciutto di Suino Nero</div>
+          <div class="menu-item-desc">Sušená šunka z černého prasete z Kalábrie, sušená rajčata, rucola, mini mozzarella</div>
+        </div>
+        <div class="menu-item-price">389 Kč</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-name">Salmone</div>
+          <div class="menu-item-desc">Provola, marinovaný losos, rucola, mini mozzarella, pomerančový olivový olej</div>
+        </div>
+        <div class="menu-item-price">389 Kč</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 30px;">
+      <a href="https://wolt.com/en/cze/karlovy-vary/restaurant/480-pizzeria-napoletana" target="_blank" class="wolt-badge">
+        <img src="images/wolt.jpg" alt="Wolt" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;">
+        <span>Objednat přes Wolt</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CHEF SECTION ═══════════ -->
+<section class="chef-section">
+  <div class="chef-content">
+    <div class="chef-img">
+      <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&q=80" alt="Šéfkuchař Luca Pirozzi">
+    </div>
+    <div class="chef-text">
+      <div class="chef-text-label">Náš šéfkuchař</div>
+      <h3>Luca <em>Pirozzi</em></h3>
+      <p>Zárukou naprosté autenticity je šéfkuchař přímo z Neapole. Pod jeho vedením dodržujeme všechny postupy dle neapolské asociace APN – od přípravy těsta, které zraje několik dní, až po finální pečení při teplotě 480°C.</p>
+      <p>Většinu typických neapolských produktů a zeleninu dovážíme přímo z Neapole, protože se u nás nedají sehnat. Všechny těstoviny vyrábíme výhradně z neapolské mouky Caputo.</p>
+      <div class="chef-badge">
+        <span>Certifikováno APN · Asociace Neapolské Pizzy</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOURS ═══════════ -->
+<section class="hours-section" id="hours">
+  <h2>Otevírací doba</h2>
+  <div class="hours-grid">
+    <!-- SABOR -->
+    <div class="hours-card hours-sabor">
+      <div class="hours-card-title">Sabor Mediterraneo</div>
+      <div class="hours-card-sub">Tapas & Steaky</div>
+      <div class="hours-row"><span class="day">Pondělí</span><span class="time hours-closed">Zavřeno</span></div>
+      <div class="hours-row"><span class="day">Úterý</span><span class="time hours-closed">Zavřeno</span></div>
+      <div class="hours-row"><span class="day">Středa</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Čtvrtek</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Pátek</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Sobota</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Neděle</span><span class="time">11:00 – 22:00</span></div>
+    </div>
+    <!-- 480° -->
+    <div class="hours-card hours-pizza">
+      <div class="hours-card-title">480° Pizzeria</div>
+      <div class="hours-card-sub">Neapolská pizza</div>
+      <div class="hours-row"><span class="day">Pondělí</span><span class="time hours-closed">Zavřeno</span></div>
+      <div class="hours-row"><span class="day">Úterý</span><span class="time hours-closed">Zavřeno</span></div>
+      <div class="hours-row"><span class="day">Středa</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Čtvrtek</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Pátek</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Sobota</span><span class="time">11:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Neděle</span><span class="time">11:00 – 22:00</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ RESERVATION ═══════════ -->
+<section class="reservation" id="reservation">
+  <h2>Zarezervujte si <em>stůl</em></h2>
+  <p>Pro rezervaci skupiny více než 8 osob nás kontaktujte na +420 775 184 045 nebo <a href="mailto:group@sabor.cz">group@sabor.cz</a></p>
+
+  <form class="reservation-form" onsubmit="event.preventDefault(); alert('Děkujeme! Vaše rezervace byla odeslána a bude potvrzena e-mailem.');">
+    <div class="form-group">
+      <label>Jméno</label>
+      <input type="text" placeholder="Vaše jméno" required>
+    </div>
+    <div class="form-group">
+      <label>Telefon</label>
+      <input type="tel" placeholder="+420" required>
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" placeholder="vas@email.cz" required>
+    </div>
+    <div class="form-group">
+      <label>Počet hostů</label>
+      <select required>
+        <option value="">Vyberte</option>
+        <option>1</option><option>2</option><option>3</option>
+        <option>4</option><option>5</option><option>6</option>
+        <option>7</option><option>8</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Restaurace</label>
+      <select required>
+        <option value="">Vyberte restauraci</option>
+        <option>SABOR Mediterraneo</option>
+        <option>480° Pizzeria Napoletana</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Datum</label>
+      <input type="date" required>
+    </div>
+    <div class="form-group">
+      <label>Čas</label>
+      <input type="time" required>
+    </div>
+    <div class="form-group">
+      <label>Délka rezervace</label>
+      <select>
+        <option>1 hodina</option>
+        <option>2 hodiny</option>
+        <option>3 hodiny</option>
+      </select>
+    </div>
+    <button type="submit" class="form-submit">Rezervovat</button>
+  </form>
+
+  <div class="reservation-phones">
+    <div class="reservation-phone">
+      <div class="reservation-phone-label">Sabor Mediterraneo</div>
+      <a href="tel:+420776539903">+420 776 539 903</a>
+    </div>
+    <div class="reservation-phone">
+      <div class="reservation-phone-label">480° Pizzeria</div>
+      <a href="tel:+420776010067">+420 776 010 067</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<section class="contact" id="contact">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h3>Kontakt</h3>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <div class="contact-item-text">
+          Náměstí Dr. M. Horákové 982/1<br>
+          360 01 Karlovy Vary<br>
+          <small style="color:var(--text-dimmer)">SABOR – přízemí (vstup z Moskevské) · 480° – suterén (vstup z náměstí)</small>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </div>
+        <div class="contact-item-text">
+          SABOR: <a href="tel:+420776539903">+420 776 539 903</a><br>
+          480°: <a href="tel:+420776010067">+420 776 010 067</a><br>
+          Skupiny: <a href="tel:+420775184045">+420 775 184 045</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </div>
+        <div class="contact-item-text">
+          <a href="mailto:group@sabor.cz">group@sabor.cz</a>
+        </div>
+      </div>
+
+      <div class="contact-socials">
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/Sabor-Mediterraneo-130853854265657/" target="_blank" class="contact-social" title="Facebook SABOR">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <!-- Instagram SABOR -->
+        <a href="https://www.instagram.com/tapas_steak_kv" target="_blank" class="contact-social" title="Instagram SABOR">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <!-- Instagram 480° -->
+        <a href="https://www.instagram.com/pizzeria480napoletana" target="_blank" class="contact-social" title="Instagram 480°">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <!-- TripAdvisor -->
+        <a href="https://www.tripadvisor.cz/Restaurant_Review-g274697-d13225788-Reviews-Tapas_Steak_Sabor_Mediterraneo-Karlovy_Vary_Karlovy_Vary_Region_Bohemia.html" target="_blank" class="contact-social" title="TripAdvisor">
+          <svg viewBox="0 0 24 24"><path d="M12.006 4.295c-2.67 0-5.338.784-7.645 2.353H0l1.963 2.135a5.997 5.997 0 004.04 10.43 5.976 5.976 0 004.075-1.6L12 19.705l1.922-2.09a5.972 5.972 0 004.076 1.598 5.999 5.999 0 004.04-10.43L24 6.648h-4.35a13.573 13.573 0 00-7.644-2.353zM6.003 17.21a3.998 3.998 0 110-7.998 3.998 3.998 0 010 7.997zm11.994 0a3.997 3.997 0 110-7.998 3.997 3.997 0 010 7.997z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-map" style="position:relative;">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2545.8!2d12.8726!3d50.2293!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47a099629e7571af%3A0x7071f99f9a48c9dd!2s480%C2%B0%20-%20Pizzeria%20Napoletana!5e0!3m2!1scs!2scz!4v1" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <a href="https://www.google.com/maps/place/Tapas+%26+Steak+-+Sabor+Mediterraneo/@50.2286307,12.8633223,17z/data=!3m1!4b1!4m6!3m5!1s0x47a0996e935dd87d:0x5912b6ceaf86245f!8m2!3d50.2286273!4d12.8658972!16s%2Fg%2F11hbgj3x9j?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D" target="_blank" style="position:absolute;inset:0;z-index:1;"></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Sabor Mediterraneo s.r.o. · Náměstí Dr. M. Horákové 982/1, Karlovy Vary</p>
+  <p style="margin-top:10px; font-size:0.65rem; opacity:0.45;">Webové stránky vytvořil <a href="https://varyshop.eu" target="_blank" style="color:inherit; text-decoration:underline; text-underline-offset:3px;">varyshop.eu</a></p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Loader
+window.addEventListener('load', () => {
+  const tl = gsap.timeline();
+  tl.to('#loader-logo', { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.7)' })
+    .to('#loader', { opacity: 0, duration: 0.6, delay: 0.6, ease: 'power2.inOut',
+      onComplete: () => document.getElementById('loader').style.display = 'none'
+    });
+
+  // Hero animations
+  gsap.from('.hero-content', {
+    opacity: 0, y: 40, duration: 1, delay: 2,
+    stagger: 0.3, ease: 'power2.out'
+  });
+  gsap.from('.hero-divider-circle', {
+    scale: 0, opacity: 0, duration: 0.8, delay: 2.5,
+    ease: 'back.out(1.7)'
+  });
+});
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 80);
+});
+
+// Mobile menu
+const toggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+toggle.addEventListener('click', () => {
+  toggle.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+});
+function closeMenu() {
+  toggle.classList.remove('active');
+  mobileMenu.classList.remove('active');
+}
+
+// GSAP ScrollTrigger animations
+gsap.registerPlugin(ScrollTrigger);
+
+// Fade in sections
+gsap.utils.toArray('.rest-header, .intro, .chef-content, .hours-section h2').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+    opacity: 0, y: 40, duration: 0.8, ease: 'power2.out'
+  });
+});
+
+// Gallery images stagger
+gsap.utils.toArray('.gallery-grid').forEach(grid => {
+  gsap.from(grid.children, {
+    scrollTrigger: { trigger: grid, start: 'top 85%', toggleActions: 'play none none none' },
+    opacity: 0, y: 30, stagger: 0.12, duration: 0.7, ease: 'power2.out'
+  });
+});
+</script>
+
+<!-- Bull cursor -->
+<div id="bull-cursor">
+  <img src="images/myska.png" alt="">
+</div>
+<style>
+*, *::before, *::after,
+a, a:hover, a:focus,
+button, button:hover,
+input, input:hover,
+select, select:hover,
+textarea, textarea:hover,
+label, [role="button"], [onclick] { cursor: none !important; }
+#bull-cursor {
+  position: fixed; top: 0; left: 0;
+  width: 156px; height: 156px;
+  pointer-events: none; z-index: 999999;
+  transform: translate(-50%, -35%);
+  transition: transform 0.08s ease;
+}
+#bull-cursor img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4)); }
+</style>
+<script>
+(function(){
+  var c = document.getElementById('bull-cursor');
+  document.addEventListener('mousemove', function(e){
+    c.style.left = e.clientX + 'px';
+    c.style.top  = e.clientY + 'px';
+  });
+  document.addEventListener('mousedown', function(){ c.style.transform = 'translate(-50%,-35%) scale(0.8)'; });
+  document.addEventListener('mouseup',   function(){ c.style.transform = 'translate(-50%,-35%) scale(1)'; });
+})();
+</script>
+
+</body>
+</html>
